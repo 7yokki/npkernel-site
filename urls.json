@@ -1,0 +1,32 @@
+{
+  "repo": "https://github.com/7yokki/NP-Kernel-OSP",
+  "repo_clone_https": "https://github.com/7yokki/NP-Kernel-OSP.git",
+  "issues": "https://github.com/7yokki/NP-Kernel-OSP/issues",
+  "pulls": "https://github.com/7yokki/NP-Kernel-OSP/pulls",
+  "actions": "https://github.com/7yokki/NP-Kernel-OSP/actions",
+  "commits": "https://github.com/7yokki/NP-Kernel-OSP/commits/main/",
+  "license": "https://github.com/7yokki/NP-Kernel-OSP/blob/main/LICENSE",
+  "readme": "https://github.com/7yokki/NP-Kernel-OSP/blob/main/README.md",
+  "todo": "https://github.com/7yokki/NP-Kernel-OSP/blob/main/TODO.md",
+  "verification_doc": "https://github.com/7yokki/NP-Kernel-OSP/blob/main/docs/verification.md",
+  "limine_findings_doc": "https://github.com/7yokki/NP-Kernel-OSP/blob/main/docs_limine_findings.md",
+  "makefile": "https://github.com/7yokki/NP-Kernel-OSP/blob/main/Makefile",
+  "src_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/src",
+  "arch_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/arch/x86_64",
+  "boot_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/boot",
+  "include_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/include",
+  "initramfs_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/initramfs",
+  "tests_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/tests",
+  "tools_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/tools",
+  "user_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/user",
+  "docs_dir": "https://github.com/7yokki/NP-Kernel-OSP/tree/main/docs",
+  "author_profile": "https://github.com/7yokki",
+  "org_reference": "No PRoblem",
+  "agent_reference": "https://manus.im",
+  "external_refs": {
+    "linux_x86_64_entry": "https://www.kernel.org/doc/html/latest/arch/x86/entry_64.html",
+    "system_v_abi_elf": "https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html"
+  },
+  "site_icon": "icon.svg",
+  "favicon": "favicon.svg"
+}

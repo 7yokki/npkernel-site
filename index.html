@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPKernel — NP Kernel v0.4 Open Source Project</title>
+<meta name="description" content="NPKernel (No Problem Kernel), NPOS için geliştirilen x86_64 monolitik-modüler çekirdek. Boot, scheduler, VFS, syscall ABI ve daha fazlası.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a href="#main" class="visually-hidden">İçeriğe geç</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-dot" aria-hidden="true"></span>
+      NPKernel
+    </div>
+    <nav class="topnav" aria-label="Site navigasyonu">
+      <span class="nav-links" style="display:flex; gap:22px;">
+        <a href="#status">Durum</a>
+        <a href="#syscalls">Syscall'lar</a>
+        <a href="#tree">Yapı</a>
+        <a href="#build">Derleme</a>
+        <a href="#notifications">Güncellemeler</a>
+      </span>
+      <a class="btn-star" id="repo-star-link" href="#" target="_blank" rel="noopener">
+        <svg class="icon-inline" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+        Star
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============================== HERO ============================== -->
+  <section class="hero" style="border-bottom:1px solid var(--border-lo); padding-bottom:56px;">
+    <div class="container hero-grid">
+      <div>
+        <h1 class="hero-title">Bir çekirdek,<br><span class="accent">sıfırdan</span> yazılıyor.</h1>
+        <p class="hero-desc">
+          <strong>NPKernel</strong> (No Problem Kernel), gelecekte geliştirilecek <strong>NPOS</strong> işletim sisteminin x86_64 çekirdek tabanı. Monolitik fakat modüler bir düzeni izliyor — yaklaşık %20 assembly, %60–80 C — ve Linux syscall ABI'siyle konuşuyor. Tam Linux uyumluluğu iddiası yok; amaç, güvenli bir userspace temeli ve NPOS'a özgü genişletme noktaları kurmak.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" id="hero-repo-btn" href="#" target="_blank" rel="noopener">
+            <svg class="icon-inline" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub'da görüntüle
+          </a>
+          <a class="btn btn-secondary" href="#build">
+            Derleme talimatları
+          </a>
+          <a class="btn btn-secondary" id="hero-license-btn" href="#" target="_blank" rel="noopener">
+            MIT License
+          </a>
+        </div>
+        <div class="hero-meta">
+          <span><b>Dil</b> C / NASM x86_64</span>
+          <span><b>Boot</b> Limine (BIOS + UEFI)</span>
+          <span><b>Hedef</b> QEMU x86_64</span>
+        </div>
+      </div>
+
+      <div class="console" aria-label="Boot konsolu simülasyonu">
+        <div class="console-bar">
+          <span class="console-dot" style="background:#d9954f;"></span>
+          <span class="console-dot" style="background:#8f6636;"></span>
+          <span class="console-dot" style="background:#3a7259;"></span>
+          <span class="console-label">COM1 — serial log</span>
+        </div>
+        <div class="console-body" id="boot-console"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== DESIGN CONSTRAINT ======================== -->
+  <section style="padding:40px 0;">
+    <div class="container">
+      <div class="callout">
+        <b>Tasarım sınırı — </b>NPKernel pencere yöneticisi, masaüstü, sprite, mouse imleci veya başka bir GUI katmanı çizmez. Kernel yalnızca güvenli bir framebuffer handoff/lease ve yapılandırılmış input temeli sağlar; compositor ve GUI userspace sorumluluğundadır.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ STATUS ============================== -->
+  <section id="status">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Özellik durumu</h2>
+        <span class="section-sub">17 alt sistem</span>
+      </div>
+      <p class="section-intro">Her alt sistemin güncel kapsamı, README'de listelendiği haliyle. Durumlar dört seviyede: çalışıyor, bounded (sınırlı ama doğrulanmış), temel (minimum yol var) ve bring-up (henüz tamamlanmadı).</p>
+
+      <table class="status-table">
+        <thead>
+          <tr>
+            <th style="width:180px;">Alt sistem</th>
+            <th style="width:130px;">Durum</th>
+            <th>Güncel kapsam</th>
+          </tr>
+        </thead>
+        <tbody id="status-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================ SYSCALLS ============================= -->
+  <section id="syscalls">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Uygulanan syscall yolları</h2>
+        <span class="section-sub">Linux x86_64 ABI</span>
+      </div>
+      <p class="section-intro">Syscall numarası <code class="mono">RAX</code>'ta, argümanlar sırasıyla <code class="mono">RDI, RSI, RDX, R10, R8, R9</code> üzerinden alınıyor. NPKernel'in dispatcher'ı bu düzeni koruyor; kullanıcı dönüşü güvenli bir <code class="mono">IRETQ</code> frame'i üzerinden yapılıyor.</p>
+
+      <div class="syscall-list" id="syscall-list"></div>
+
+      <p class="abi-note">
+        Desteklenmeyen syscall'lar <code class="mono" style="color:var(--warn);">-ENOSYS</code> döndürür · ABI referansları:
+        <a href="https://www.kernel.org/doc/html/latest/arch/x86/entry_64.html" target="_blank" rel="noopener">Linux x86_64 entry</a> ·
+        <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" target="_blank" rel="noopener">System V ABI / ELF</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ TREE ================================= -->
+  <section id="tree">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Dizin yapısı</h2>
+        <span class="section-sub">repo kökü</span>
+      </div>
+      <div class="tree" id="dir-tree"></div>
+    </div>
+  </section>
+
+  <!-- ============================ LIFECYCLE ============================ -->
+  <section id="lifecycle">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Süreç yaşam döngüsü</h2>
+      </div>
+      <p class="section-intro" style="margin-bottom:0;">
+        Her userspace süreci kendi CR3/address-space root'u, VMA listesi, kernel stack'i ve FD sahipliğiyle çalışır. <code class="mono">exit</code> süreci zombie durumuna geçirir; parent bekliyorsa uyandırılır. <code class="mono">wait4</code> çıkış durumunu kullanıcı belleğine kopyaladıktan sonra child'ın VMA listesi, page table'ları, açık FD'leri ve kernel stack'i güvenli sırayla serbest bırakılır.
+      </p>
+      <p class="section-intro" style="margin-top:16px;">
+        Kullanıcı kaynaklı CPU exception'ları çekirdeği doğrudan panic'e sürüklemez: geçerli lazy allocation, stack growth veya COW koşulları çözümlenir; çözülemeyen fault ilgili Linux sinyaline çevrilir. Kernel kaynaklı fatal fault'lar panic yoluna gider.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ BUILD ================================ -->
+  <section id="build">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Derleme ve çalıştırma</h2>
+      </div>
+
+      <div class="build-grid">
+        <div>
+          <p class="section-intro" style="margin-top:0;">Ubuntu/Debian üzerinde gereken paketler:</p>
+          <ul class="req-list" id="req-list"></ul>
+          <p class="build-note">Limine v9.x-binary build sırasında <code>build/limine</code> altına alınır. Initramfs üreticisi proje kökünü script konumundan bulur; arşiv başka bir dizine çıkarıldığında da build yolu sabit bir konuma bağlı değildir.</p>
+        </div>
+
+        <div>
+          <div class="terminal">
+            <div class="terminal-head">shell</div>
+            <pre id="build-commands"></pre>
+          </div>
+          <p class="build-note"><code>make run</code> SeaBIOS/legacy-PC yolunu, <code>make run-uefi</code> ise OVMF UEFI yolunu kullanır. OVMF yolu için Makefile varsayılan olarak <code>/usr/share/OVMF/OVMF_CODE_4M.fd</code> arar. QEMU seri çıktısı en güvenilir doğrulama kanalıdır.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= NOTIFICATIONS =========================== -->
+  <section id="notifications">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Güncellemeler</h2>
+        <span class="section-sub" id="noti-count"></span>
+      </div>
+      <p class="section-intro">Projedeki son değişiklikler ve düzeltmeler, tarih sırasına göre.</p>
+      <div class="noti-list" id="noti-list">
+        <div class="noti-loading">güncellemeler yükleniyor…</div>
+      </div>
+
+      <div class="noti-form-wrap">
+        <button type="button" class="noti-toggle" id="noti-toggle" aria-expanded="false" aria-controls="noti-form">
+          <span class="noti-toggle-icon" aria-hidden="true">+</span> Bildirim bırak
+        </button>
+
+        <form class="noti-form" id="noti-form" hidden>
+          <p class="noti-form-note">
+            Bu site statik olduğu için bildirimler bir sunucuya gönderilmez. Aşağıyı doldurup <b>Ekle</b>'ye bastığında kayıt bu tarayıcıda saklanır ve listeye eklenir; kalıcı olarak yayınlamak için üretilen JSON parçasını kopyalayıp repodaki <code class="mono">noti.json</code> dosyasına ekleyebilirsin.
+          </p>
+          <div class="noti-form-grid">
+            <label class="noti-field">
+              <span>Tarih</span>
+              <input type="date" name="date" id="noti-input-date" required>
+            </label>
+            <label class="noti-field">
+              <span>Yazan</span>
+              <input type="text" name="author" id="noti-input-author" placeholder="ör. 7yokki" required maxlength="60">
+            </label>
+          </div>
+          <label class="noti-field noti-field-full">
+            <span>Başlık</span>
+            <input type="text" name="title" id="noti-input-title" placeholder="ör. epoll için edge-triggered mod eklendi" required maxlength="120">
+          </label>
+          <label class="noti-field noti-field-full">
+            <span>Açıklama</span>
+            <textarea name="description" id="noti-input-desc" rows="3" placeholder="Değişikliği kısaca anlat…" required maxlength="500"></textarea>
+          </label>
+          <div class="noti-form-actions">
+            <button type="submit" class="btn btn-primary">Ekle</button>
+            <button type="button" class="btn btn-secondary" id="noti-cancel">Vazgeç</button>
+          </div>
+        </form>
+
+        <div class="noti-export" id="noti-export" hidden>
+          <div class="noti-export-head">
+            <span>noti.json için hazır kayıt</span>
+            <button type="button" class="btn-copy" id="noti-copy">Kopyala</button>
+          </div>
+          <pre class="noti-export-code" id="noti-export-code"></pre>
+          <p class="noti-export-hint">Bu parçayı <code class="mono">noti.json</code> dizisinin başına ekleyip commit'lersen kalıcı olur.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== RESOURCES ============================= -->
+  <section id="resources">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Kaynaklar</h2>
+      </div>
+      <div class="link-grid" id="link-grid"></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="license-strip">
+  <div class="container">
+    <span>NPKernel, <a id="license-strip-link" href="#" target="_blank" rel="noopener">MIT License</a> altında yayımlanır.</span>
+    <span>· 7YokKi tarafından yürütülür, No PRoblem adına paylaşılır.</span>
+  </div>
+</div>
+
+<footer>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <b>NPKernel</b> — NP Kernel v0.4 Open Source Project.<br>
+      Bu proje tamamen AI desteği ile geliştirilmiştir; planlama insan elinden, düzenli geliştirme <a href="https://manus.im" target="_blank" rel="noopener" style="color:var(--text-dim); border-bottom:1px dotted var(--text-faint);">Manus.AI</a> agent'ı tarafından yürütülür.
+    </div>
+    <div class="footer-links">
+      <a id="footer-issues-link" href="#" target="_blank" rel="noopener">Issues</a>
+      <a id="footer-pulls-link" href="#" target="_blank" rel="noopener">Pull Requests</a>
+      <a id="footer-commits-link" href="#" target="_blank" rel="noopener">Commits</a>
+      <a id="footer-author-link" href="#" target="_blank" rel="noopener">7yokki</a>
+    </div>
+  </div>
+  <p class="footer-note">Bu sayfa README.md içeriğinden türetilmiştir ve resmi olmayan bir tanıtım sitesidir.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

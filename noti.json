@@ -1,0 +1,38 @@
+[
+  {
+    "date": "2026-02-14",
+    "title": "rt_sigreturn ve signal delivery tamamlandı",
+    "description": "rt_sigaction artık kayıt tutmanın ötesinde gerçek handler yönlendirmesi yapıyor. Minimal user stack frame, restorer doğrulaması ve rt_sigreturn ile özgün syscall/IRET frame'i güvenli biçimde geri yükleniyor.",
+    "author": "7yokki"
+  },
+  {
+    "date": "2026-02-10",
+    "title": "Audit raporundaki beş kernel-side sorun giderildi",
+    "description": "Exception isolation, signal delivery, execve -EFAULT yolu, sys_read parça davranışı ve getcwd ABI uyumu düzeltildi. Sonuçlar docs/verification.md içinde kayıtlı.",
+    "author": "7yokki"
+  },
+  {
+    "date": "2026-01-28",
+    "title": "Bounded epoll ve poll/ppoll desteği eklendi",
+    "description": "Regular file, pipe ve TTY readiness durumları artık level-triggered epoll ile bounded tablolar üzerinden sunuluyor. Blocking wait queue ve edge-triggered epoll sonraki aşamada.",
+    "author": "7yokki"
+  },
+  {
+    "date": "2026-01-19",
+    "title": "NPKFS: fsync/fdatasync/sync ve metadata recovery",
+    "description": "Persistent /persist bölgesi için çift metadata slotu, checksum, generation ve transaction marker ile sınırlı recovery eklendi. Data checksum ve journaling henüz yok.",
+    "author": "7yokki"
+  },
+  {
+    "date": "2026-01-05",
+    "title": "SMP bring-up: Limine MP response ve AP online",
+    "description": "QEMU -smp 2 ile AP çekirdekler online duruma getirildi. AP scheduler migration henüz etkin değil; bu TODO listesinde önceliklendirildi.",
+    "author": "7yokki"
+  },
+  {
+    "date": "2025-12-22",
+    "title": "Fork/COW ve wait4 yolu stabilize edildi",
+    "description": "fork ile low-half address-space clone ve copy-on-write page resolution çalışıyor. exit sonrası zombie süreç, parent wakeup ve wait4 çıkış durumu aktarımı doğrulandı.",
+    "author": "7yokki"
+  }
+]
